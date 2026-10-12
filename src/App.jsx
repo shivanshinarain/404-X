@@ -691,13 +691,6 @@ function App() {
         </svg>
 
         <div className="hero-content">
-          <div className="hero-tagline-badge" title="404ØX Official Studio Tagline">
-            <span className="tagline-star">✳</span>
-            <span className="tagline-brand">404ØX</span>
-            <span className="tagline-divider">·</span>
-            <span className="tagline-text">BEYOND BOUNDARIES. BUILT FOR WHAT'S NEXT.</span>
-          </div>
-
           <div className="hero-heading">
             <span className="hero-line">WE MAKE</span>
             <span className="hero-line hero-line-offset">DIGITAL</span>
