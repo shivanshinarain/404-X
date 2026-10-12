@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSound } from "../context/SoundContext";
-import CreatorModal from "../components/CreatorModal";
 import "../styles/About404OX.css";
 
 export default function About404OX() {
   const { playClick, playBrandSound, playContactSound } = useSound();
-  const [creatorOpen, setCreatorOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -551,26 +549,6 @@ export default function About404OX() {
           </Link>
         </div>
       </section>
-
-      {/* Floating Corner Founder Avatar Trigger */}
-      <button
-        type="button"
-        className="floating-founder-trigger"
-        onClick={() => {
-          playClick();
-          setCreatorOpen(true);
-        }}
-        title="Meet Shivanshi, Founder of 404ØX"
-        aria-label="Open Founder introduction popup"
-      >
-        <span className="founder-avatar-mini">
-          <img src="/founder.jpg" alt="Shivanshi" />
-        </span>
-        <span className="founder-trigger-text">Hey! 👋</span>
-      </button>
-
-      {/* Creator / Founder Welcome Popup Modal */}
-      <CreatorModal forceOpen={creatorOpen ? true : undefined} onToggle={setCreatorOpen} />
     </div>
   );
 }

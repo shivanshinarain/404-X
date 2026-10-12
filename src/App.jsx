@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Services from "./Services";
-import CreatorModal from "./components/CreatorModal";
 import { useSound } from "./context/SoundContext";
 import "./App.css";
 
@@ -408,7 +407,6 @@ function App() {
   const [expandedProcess, setExpandedProcess] = useState(null);
   const [formStatus, setFormStatus] = useState("");
   const [cursor, setCursor] = useState({ x: -100, y: -100 });
-  const [creatorOpen, setCreatorOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1665,27 +1663,6 @@ function App() {
               <a href="#process">Process</a>
               <a href="#contact">Contact</a>
               <Link to="/about-404ox" onClick={playBrandSound}>What is 404ØX? ↗</Link>
-              <button
-                type="button"
-                className="footer-founder-link"
-                onClick={() => {
-                  playClick();
-                  setCreatorOpen(true);
-                }}
-                title="Meet Shivanshi Narain, Founder of 404ØX"
-                style={{
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  font: "inherit",
-                  color: "var(--vermilion)",
-                  cursor: "pointer",
-                  fontWeight: 700,
-                  textAlign: "left",
-                }}
-              >
-                Meet the Founder 👋
-              </button>
               <Link to="/portal" onClick={playClick}>Client Portal ↗</Link>
               <Link to="/admin" onClick={playClick}>Admin Center ↗</Link>
             </div>
@@ -1735,26 +1712,6 @@ function App() {
           </div>
         </div>
       </footer>
-
-      {/* Floating Corner Founder Avatar Trigger */}
-      <button
-        type="button"
-        className="floating-founder-trigger"
-        onClick={() => {
-          playClick();
-          setCreatorOpen(true);
-        }}
-        title="Meet Shivanshi, Founder of 404ØX"
-        aria-label="Open Founder introduction popup"
-      >
-        <span className="founder-avatar-mini">
-          <img src="/founder.jpg" alt="Shivanshi" />
-        </span>
-        <span className="founder-trigger-text">Hey! 👋</span>
-      </button>
-
-      {/* Creator / Founder Welcome Popup Modal */}
-      <CreatorModal forceOpen={creatorOpen ? true : undefined} onToggle={setCreatorOpen} />
     </main>
   );
 }
