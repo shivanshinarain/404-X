@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSound } from "../context/SoundContext";
-import SoundBar from "../components/SoundBar";
 import "../styles/PortalAdmin.css";
 
 export default function AdminDashboard() {
@@ -93,7 +92,6 @@ export default function AdminDashboard() {
             </span>
           </Link>
           <div className="portal-nav-actions">
-            <SoundBar />
             <Link to="/" className="portal-btn-ghost" onClick={playClick}>
               ← BACK TO STUDIO
             </Link>
@@ -163,7 +161,6 @@ export default function AdminDashboard() {
           </span>
         </Link>
         <div className="portal-nav-actions">
-          <SoundBar />
           <span style={{ fontSize: "0.75rem", fontFamily: "var(--mono)", fontWeight: 700 }}>
             ⚡ {user.name} ({user.email})
           </span>

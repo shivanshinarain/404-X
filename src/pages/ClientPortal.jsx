@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSound } from "../context/SoundContext";
-import SoundBar from "../components/SoundBar";
 import "../styles/PortalAdmin.css";
 
 export default function ClientPortal() {
@@ -63,7 +62,6 @@ export default function ClientPortal() {
             <span className="portal-badge">CLIENT PORTAL</span>
           </Link>
           <div className="portal-nav-actions">
-            <SoundBar />
             <Link to="/" className="portal-btn-ghost" onClick={playClick}>
               ← BACK TO STUDIO
             </Link>
@@ -134,7 +132,6 @@ export default function ClientPortal() {
           <span className="portal-badge">CLIENT PORTAL</span>
         </Link>
         <div className="portal-nav-actions">
-          <SoundBar />
           <span style={{ fontSize: "0.75rem", fontFamily: "var(--mono)", fontWeight: 700 }}>
             {user.avatar} {user.name} ({user.company || "Client"})
           </span>

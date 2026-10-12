@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Services from "./Services";
-import SoundBar from "./components/SoundBar";
 import { useSound } from "./context/SoundContext";
 import "./App.css";
 
@@ -235,7 +234,7 @@ const internationalClients = [
     howWeWorked: "Combined custom GSAP inertial scrolling with editorial typography and graded 4K cinematic footage to high-fashion standards.",
     impact: "3.2x Session Duration Increase · Featured on Leading Design Publications",
     highlight: "Luxury Fashion Leader",
-    accent: "#ffffff",
+    accent: "#8B5CF6",
     symbol: "✦",
   },
   {
@@ -283,7 +282,7 @@ const internationalClients = [
     howWeWorked: "Engineered optimized low-polygon WebGL 3D models with physically-based rendering (PBR) and mastered cinematic sound design.",
     impact: "4.2 Min Average Configurator Engagement · High Test-Drive Conversions",
     highlight: "Clean Mobility Tech",
-    accent: "#f4f4f4",
+    accent: "#00B4D8",
     symbol: "✳",
   },
   {
@@ -388,7 +387,15 @@ const phoneNumber = "+919196299954";
 const phoneFormatted = "+91 91962 99954";
 
 function App() {
-  const { playClick } = useSound();
+  const {
+    playClick,
+    playBrandSound,
+    playAboutSound,
+    playServicesSound,
+    playWorkSound,
+    playClientsSound,
+    playContactSound,
+  } = useSound();
   const root = useRef(null);
   const processScrollRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -548,13 +555,14 @@ function App() {
     window.location.href = `mailto:hello@404ox.studio?subject=${subject}&body=${body}`;
   };
 
-  const openWhatsApp = () => {
-    const msg = encodeURIComponent(
-      `Hi 404ØX Studio! I would like to discuss a project (Service: ${
-        selectedService || "Digital Growth"
-      }).`
-    );
-    window.open(`https://wa.me/919196299954?text=${msg}`, "_blank");
+  const openWhatsApp = (customMsg) => {
+    const text =
+      customMsg ||
+      (selectedService
+        ? `Hi 404ØX Studio! I would like to discuss a project (Service: ${selectedService}).`
+        : `Hi 404ØX Studio! I would like to discuss a new project.`);
+    const msg = encodeURIComponent(text);
+    window.open(`https://wa.me/919196299954?text=${msg}`, "_blank", "noopener,noreferrer");
   };
 
   const current = projects[activeProject];
@@ -572,122 +580,86 @@ function App() {
 
       {/* Clean & Sleek Interactive Navbar (Available & Number removed as requested) */}
       <header className={`topbar ${isScrolled ? "topbar-scrolled" : ""}`}>
-        <a href="#home" className="brand" aria-label="404ØX Home">
+        <Link
+          to="/about-404ox"
+          className="brand"
+          aria-label="What is 404ØX"
+          title="404ØX® — Beyond Boundaries. Built for What's Next."
+          onClick={() => {
+            playBrandSound();
+          }}
+        >
           404<span className="brand-symbol">Ø</span>X
           <span className="brand-reg">®</span>
-        </a>
+        </Link>
 
         <nav className={menuOpen ? "nav-links nav-open" : "nav-links"}>
           <a
             href="#about"
             className={activeSection === "about" ? "active" : ""}
-            onClick={() => setMenuOpen(false)}
+            onClick={() => {
+              playAboutSound();
+              setMenuOpen(false);
+            }}
           >
             about us
           </a>
           <a
             href="#services"
             className={activeSection === "services" ? "active" : ""}
-            onClick={() => setMenuOpen(false)}
+            onClick={() => {
+              playServicesSound();
+              setMenuOpen(false);
+            }}
           >
             services
           </a>
           <a
             href="#cases"
             className={activeSection === "cases" || activeSection === "track-record" ? "active" : ""}
-            onClick={() => setMenuOpen(false)}
+            onClick={() => {
+              playWorkSound();
+              setMenuOpen(false);
+            }}
           >
             work
           </a>
           <a
             href="#clients"
             className={activeSection === "clients" ? "active" : ""}
-            onClick={() => setMenuOpen(false)}
+            onClick={() => {
+              playClientsSound();
+              setMenuOpen(false);
+            }}
           >
             clients
           </a>
-          <a
-            href="#process"
-            className={activeSection === "process" ? "active" : ""}
-            onClick={() => setMenuOpen(false)}
-          >
-            process
-          </a>
-          <a
-            href="#contact"
-            className={activeSection === "contact" ? "active" : ""}
-            onClick={() => { playClick(); setMenuOpen(false); }}
-          >
-            contact
-          </a>
-
-          <Link
-            to="/portal"
-            className="nav-portal-link"
-            onClick={() => { playClick(); setMenuOpen(false); }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "5px",
-              fontFamily: "var(--mono)",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              padding: "6px 13px",
-              borderRadius: "999px",
-              background: "#ffffff",
-              border: "1px solid rgba(228, 61, 18, 0.25)",
-              color: "var(--ink)",
-              textDecoration: "none",
-            }}
-            title="Client Login & Project Management Portal"
-          >
-            <span>PORTAL</span>
-            <span style={{ color: "var(--vermilion)", fontSize: "0.6rem" }}>●</span>
-          </Link>
-
-          <Link
-            to="/admin"
-            className="nav-admin-link"
-            onClick={() => { playClick(); setMenuOpen(false); }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "4px",
-              fontFamily: "var(--mono)",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              padding: "6px 13px",
-              borderRadius: "999px",
-              background: "rgba(228, 61, 18, 0.08)",
-              border: "1px solid rgba(228, 61, 18, 0.25)",
-              color: "var(--vermilion)",
-              textDecoration: "none",
-            }}
-            title="Private Admin Console, Analytics & Security Logs"
-          >
-            <span>ADMIN</span>
-            <span>⚡</span>
-          </Link>
 
           <button
             className="nav-cta"
-            onClick={() => { playClick(); contactWithService(""); }}
+            onClick={() => {
+              playContactSound();
+              setMenuOpen(false);
+              openWhatsApp();
+            }}
+            title="Chat directly with 404ØX Studio on WhatsApp"
+            aria-label="Let's talk on WhatsApp"
           >
             <span>let's talk</span>
             <span className="cta-arrow">↗</span>
           </button>
         </nav>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <SoundBar />
-          <button
-            className="menu-toggle"
-            onClick={() => { playClick(); setMenuOpen(!menuOpen); }}
-            aria-label="Toggle navigation menu"
-          >
-            {menuOpen ? "CLOSE −" : "MENU +"}
-          </button>
-        </div>
+        <button
+          className="menu-toggle"
+          onClick={() => {
+            playClick();
+            setMenuOpen(!menuOpen);
+          }}
+          aria-label="Toggle navigation menu"
+        >
+          {menuOpen ? "CLOSE −" : "MENU +"}
+        </button>
       </header>
 
       {/* Hero Section with Workable Interactive Stickers */}
@@ -719,6 +691,13 @@ function App() {
         </svg>
 
         <div className="hero-content">
+          <div className="hero-tagline-badge" title="404ØX Official Studio Tagline">
+            <span className="tagline-star">✳</span>
+            <span className="tagline-brand">404ØX</span>
+            <span className="tagline-divider">·</span>
+            <span className="tagline-text">BEYOND BOUNDARIES. BUILT FOR WHAT'S NEXT.</span>
+          </div>
+
           <div className="hero-heading">
             <span className="hero-line">WE MAKE</span>
             <span className="hero-line hero-line-offset">DIGITAL</span>
@@ -785,7 +764,7 @@ function App() {
         </div>
 
         <div className="hero-bottom">
-          <span>INDEPENDENT DIGITAL STUDIO</span>
+          <span className="hero-bottom-tagline">404ØX BEYOND BOUNDARIES. BUILT FOR WHAT'S NEXT.</span>
           <span>WEBSITES · APPS · VIDEO EDITING · E-COMMERCE · MARKETING</span>
           <button onClick={() => goTo("about")}>SCROLL TO EXPLORE ↓</button>
         </div>
@@ -868,7 +847,13 @@ function App() {
             FROM <mark>GOOD WORK</mark>,<br />
             NOT PROMISES.
           </h2>
-          <div className="mascot" aria-label="Original 404ØX star character">
+          <div
+            className="mascot"
+            aria-label="Original 404ØX star character"
+            onClick={playBrandSound}
+            style={{ cursor: "pointer" }}
+            title="Click 404ØX mascot"
+          >
             <svg viewBox="0 0 220 220" role="img" aria-label="Gold star character">
               <path
                 d="M110 5 L132 42 L170 20 L167 62 L211 70 L181 102 L211 132 L168 145 L178 188 L137 174 L110 214 L86 176 L44 193 L52 151 L10 137 L39 106 L10 76 L53 65 L48 23 L87 43 Z"
@@ -1664,8 +1649,8 @@ function App() {
         <div className="ticker" aria-hidden="true">
           <div className="ticker-track">
             {Array.from({ length: 8 }).map((_, i) => (
-              <span key={i}>
-                404ØX <b>✳</b> WEBSITES <b>·</b> APPS <b>·</b> VIDEO EDITING <b>·</b> E-COMMERCE <b>·</b> DIGITAL MARKETING <b>↗</b>{" "}
+              <span key={i} onClick={playBrandSound} style={{ cursor: "pointer" }}>
+                404ØX <b>✳</b> BEYOND BOUNDARIES. BUILT FOR WHAT'S NEXT. <b>·</b> WEBSITES <b>·</b> APPS <b>·</b> VIDEO EDITING <b>·</b> E-COMMERCE <b>·</b> DIGITAL MARKETING <b>↗</b>{" "}
               </span>
             ))}
           </div>
@@ -1684,6 +1669,7 @@ function App() {
               <a href="#cases">Portfolio</a>
               <a href="#process">Process</a>
               <a href="#contact">Contact</a>
+              <Link to="/about-404ox" onClick={playBrandSound}>What is 404ØX? ↗</Link>
               <Link to="/portal" onClick={playClick}>Client Portal ↗</Link>
               <Link to="/admin" onClick={playClick}>Admin Center ↗</Link>
             </div>

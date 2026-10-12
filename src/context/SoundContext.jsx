@@ -1,16 +1,12 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef } from "react";
 
 const SoundContext = createContext();
 
 export function SoundProvider({ children }) {
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const [ambientPlaying, setAmbientPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
-
   const audioCtxRef = useRef(null);
-  const ambientNodesRef = useRef([]);
+  const lastTouchTimeRef = useRef(0);
 
-  // Initialize AudioContext on first user interaction
+  // Initialize or resume AudioContext safely
   const getAudioContext = () => {
     if (!audioCtxRef.current) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -19,173 +15,263 @@ export function SoundProvider({ children }) {
       }
     }
     if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
-      audioCtxRef.current.resume();
+      audioCtxRef.current.resume().catch(() => {});
     }
     return audioCtxRef.current;
   };
 
-  // Play a crisp modern futuristic UI click
-  const playClick = () => {
-    if (!soundEnabled) return;
+  // Tactile touch click sound on every touch/tap/click anywhere on the website
+  const playTouch = () => {
+    const now = Date.now();
+    if (now - lastTouchTimeRef.current < 40) return;
+    lastTouchTimeRef.current = now;
+
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
       osc.type = "sine";
-      osc.frequency.setValueAtTime(800, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.05);
+      const startTime = ctx.currentTime;
+      osc.frequency.setValueAtTime(820, startTime);
+      osc.frequency.exponentialRampToValueAtTime(260, startTime + 0.04);
 
-      gain.gain.setValueAtTime(volume * 0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start();
-      osc.stop(ctx.currentTime + 0.05);
-    } catch {
-      // Audio error fallback
-    }
-  };
-
-  // Play a gentle hover tick
-  const playHover = () => {
-    if (!soundEnabled) return;
-    try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      gain.gain.setValueAtTime(volume * 0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+      gain.gain.setValueAtTime(0.45, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.04);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
-      osc.start();
-      osc.stop(ctx.currentTime + 0.03);
-    } catch {
-      // Audio error fallback
-    }
+      osc.start(startTime);
+      osc.stop(startTime + 0.045);
+    } catch {}
   };
 
-  // Play an action success chime (high tech dual-tone)
-  const playSuccess = () => {
-    if (!soundEnabled) return;
+  // Distinct signature sound for "404ØX" brand
+  const playBrandSound = () => {
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
 
-      [587.33, 880].forEach((freq, i) => {
+      const now = ctx.currentTime;
+
+      // 1. Resonant sub-bass impact drop (110Hz -> 45Hz)
+      const subOsc = ctx.createOscillator();
+      const subGain = ctx.createGain();
+      subOsc.type = "sine";
+      subOsc.frequency.setValueAtTime(110, now);
+      subOsc.frequency.exponentialRampToValueAtTime(45, now + 0.45);
+      subGain.gain.setValueAtTime(0.65, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      subOsc.connect(subGain);
+      subGain.connect(ctx.destination);
+      subOsc.start(now);
+      subOsc.stop(now + 0.46);
+
+      // 2. Futuristic holographic rising celestial arpeggio
+      const brandArp = [
+        { freq: 293.66, t: 0.0 },  // D4
+        { freq: 440.0,  t: 0.07 }, // A4
+        { freq: 587.33, t: 0.14 }, // D5
+        { freq: 739.99, t: 0.21 }, // F#5
+        { freq: 880.0,  t: 0.28 }, // A5
+        { freq: 1174.66,t: 0.35 }, // D6
+      ];
+
+      brandArp.forEach(({ freq, t }) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-
         osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
-
-        gain.gain.setValueAtTime(volume * 0.18, ctx.currentTime + i * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.25);
-
+        osc.frequency.setValueAtTime(freq, now + t);
+        gain.gain.setValueAtTime(0.55, now + t);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.4);
         osc.connect(gain);
         gain.connect(ctx.destination);
-
-        osc.start(ctx.currentTime + i * 0.08);
-        osc.stop(ctx.currentTime + i * 0.08 + 0.25);
+        osc.start(now + t);
+        osc.stop(now + t + 0.42);
       });
-    } catch {
-      // Audio error fallback
-    }
+
+      // 3. Shimmer overtone bell
+      const bellOsc = ctx.createOscillator();
+      const bellGain = ctx.createGain();
+      bellOsc.type = "triangle";
+      bellOsc.frequency.setValueAtTime(1480, now + 0.35);
+      bellGain.gain.setValueAtTime(0.35, now + 0.35);
+      bellGain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+      bellOsc.connect(bellGain);
+      bellGain.connect(ctx.destination);
+      bellOsc.start(now + 0.35);
+      bellOsc.stop(now + 0.86);
+    } catch {}
   };
 
-  // Ambient generative soundscape using dual harmonic low-pass filtered drones
-  const startAmbient = () => {
+  // Distinct sound for "About us"
+  const playAboutSound = () => {
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
-      stopAmbient();
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+      const now = ctx.currentTime;
 
-      const freqs = [110, 164.81, 220]; // A2, E3, A3 warm ambient chord
-      const nodes = [];
-
-      freqs.forEach((freq) => {
+      // Warm harmonic double chime (F4 + C5)
+      [349.23, 523.25].forEach((freq, idx) => {
         const osc = ctx.createOscillator();
-        const filter = ctx.createBiquadFilter();
         const gain = ctx.createGain();
-
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(320, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.001, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(volume * 0.06, ctx.currentTime + 2.5);
-
-        osc.connect(filter);
-        filter.connect(gain);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.5, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.3);
+        osc.connect(gain);
         gain.connect(ctx.destination);
-
-        osc.start();
-        nodes.push({ osc, gain });
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.32);
       });
-
-      ambientNodesRef.current = nodes;
-      setAmbientPlaying(true);
-    } catch {
-      // Audio error fallback
-    }
+    } catch {}
   };
 
-  const stopAmbient = () => {
-    if (ambientNodesRef.current.length > 0) {
-      try {
-        const ctx = audioCtxRef.current;
-        ambientNodesRef.current.forEach(({ osc, gain }) => {
-          if (ctx) {
-            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-            setTimeout(() => {
-              try {
-                osc.stop();
-              } catch {}
-            }, 850);
-          } else {
-            osc.stop();
-          }
-        });
-      } catch {}
-      ambientNodesRef.current = [];
-    }
-    setAmbientPlaying(false);
+  // Distinct sound for "Services"
+  const playServicesSound = () => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+      const now = ctx.currentTime;
+
+      // High-tech ascending triplet (D4 -> F#4 -> A4 -> D5)
+      [293.66, 369.99, 440.0, 587.33].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.45, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.26);
+      });
+    } catch {}
   };
 
-  const toggleSound = () => {
-    getAudioContext();
-    const nextState = !soundEnabled;
-    setSoundEnabled(nextState);
-    if (!nextState) {
-      stopAmbient();
-    }
+  // Distinct sound for "Work"
+  const playWorkSound = () => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+      const now = ctx.currentTime;
+
+      [329.63, 659.25].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.5, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.32);
+      });
+    } catch {}
   };
 
-  const toggleAmbient = () => {
-    if (!soundEnabled) {
-      setSoundEnabled(true);
-    }
-    if (ambientPlaying) {
-      stopAmbient();
-    } else {
-      startAmbient();
-    }
+  // Distinct sound for "Clients"
+  const playClientsSound = () => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+      const now = ctx.currentTime;
+
+      [392.0, 587.33].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+        gain.gain.setValueAtTime(0.5, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.28);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.3);
+      });
+    } catch {}
   };
 
+  // Distinct sound for "Contact" / "Let's Talk"
+  const playContactSound = () => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+      const now = ctx.currentTime;
+
+      [440.0, 554.37, 659.25].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+        gain.gain.setValueAtTime(0.55, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 0.36);
+      });
+    } catch {}
+  };
+
+  const playClick = () => {
+    playTouch();
+  };
+
+  // Global touch / click listener to play touch sound anywhere on the page
   useEffect(() => {
+    const handleGesture = () => {
+      getAudioContext();
+    };
+
+    const handlePointerDown = (e) => {
+      handleGesture();
+      // Do not double-play click if clicking on an interactive element with its own sound
+      const target = e.target;
+      const isCustomSound = target.closest(
+        ".brand, [href='#about'], [href='#services'], [href='#cases'], [href='#clients'], .nav-cta, .mascot, .ticker span"
+      );
+      if (!isCustomSound) {
+        playTouch();
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    window.addEventListener("touchstart", handleGesture, { passive: true });
+    window.addEventListener("click", handleGesture, { passive: true });
+    window.addEventListener("keydown", handleGesture, { passive: true });
+
     return () => {
-      stopAmbient();
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("touchstart", handleGesture);
+      window.removeEventListener("click", handleGesture);
+      window.removeEventListener("keydown", handleGesture);
       if (audioCtxRef.current) {
         audioCtxRef.current.close().catch(() => {});
       }
@@ -195,15 +281,16 @@ export function SoundProvider({ children }) {
   return (
     <SoundContext.Provider
       value={{
-        soundEnabled,
-        ambientPlaying,
-        volume,
-        setVolume,
-        toggleSound,
-        toggleAmbient,
+        soundEnabled: true,
+        volume: 1.0,
+        playTouch,
         playClick,
-        playHover,
-        playSuccess,
+        playBrandSound,
+        playAboutSound,
+        playServicesSound,
+        playWorkSound,
+        playClientsSound,
+        playContactSound,
       }}
     >
       {children}
@@ -215,15 +302,16 @@ export function useSound() {
   const context = useContext(SoundContext);
   if (!context) {
     return {
-      soundEnabled: false,
-      ambientPlaying: false,
-      volume: 0.5,
-      setVolume: () => {},
-      toggleSound: () => {},
-      toggleAmbient: () => {},
+      soundEnabled: true,
+      volume: 1.0,
+      playTouch: () => {},
       playClick: () => {},
-      playHover: () => {},
-      playSuccess: () => {},
+      playBrandSound: () => {},
+      playAboutSound: () => {},
+      playServicesSound: () => {},
+      playWorkSound: () => {},
+      playClientsSound: () => {},
+      playContactSound: () => {},
     };
   }
   return context;
