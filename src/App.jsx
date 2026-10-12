@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Services from "./Services";
+import SoundBar from "./components/SoundBar";
+import { useSound } from "./context/SoundContext";
 import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -385,6 +388,7 @@ const phoneNumber = "+919196299954";
 const phoneFormatted = "+91 91962 99954";
 
 function App() {
+  const { playClick } = useSound();
   const root = useRef(null);
   const processScrollRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -612,27 +616,78 @@ function App() {
           <a
             href="#contact"
             className={activeSection === "contact" ? "active" : ""}
-            onClick={() => setMenuOpen(false)}
+            onClick={() => { playClick(); setMenuOpen(false); }}
           >
             contact
           </a>
 
+          <Link
+            to="/portal"
+            className="nav-portal-link"
+            onClick={() => { playClick(); setMenuOpen(false); }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "5px",
+              fontFamily: "var(--mono)",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              padding: "6px 13px",
+              borderRadius: "999px",
+              background: "#ffffff",
+              border: "1px solid rgba(228, 61, 18, 0.25)",
+              color: "var(--ink)",
+              textDecoration: "none",
+            }}
+            title="Client Login & Project Management Portal"
+          >
+            <span>PORTAL</span>
+            <span style={{ color: "var(--vermilion)", fontSize: "0.6rem" }}>●</span>
+          </Link>
+
+          <Link
+            to="/admin"
+            className="nav-admin-link"
+            onClick={() => { playClick(); setMenuOpen(false); }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              fontFamily: "var(--mono)",
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              padding: "6px 13px",
+              borderRadius: "999px",
+              background: "rgba(228, 61, 18, 0.08)",
+              border: "1px solid rgba(228, 61, 18, 0.25)",
+              color: "var(--vermilion)",
+              textDecoration: "none",
+            }}
+            title="Private Admin Console, Analytics & Security Logs"
+          >
+            <span>ADMIN</span>
+            <span>⚡</span>
+          </Link>
+
           <button
             className="nav-cta"
-            onClick={() => contactWithService("")}
+            onClick={() => { playClick(); contactWithService(""); }}
           >
             <span>let's talk</span>
             <span className="cta-arrow">↗</span>
           </button>
         </nav>
 
-        <button
-          className="menu-toggle"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation menu"
-        >
-          {menuOpen ? "CLOSE −" : "MENU +"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <SoundBar />
+          <button
+            className="menu-toggle"
+            onClick={() => { playClick(); setMenuOpen(!menuOpen); }}
+            aria-label="Toggle navigation menu"
+          >
+            {menuOpen ? "CLOSE −" : "MENU +"}
+          </button>
+        </div>
       </header>
 
       {/* Hero Section with Workable Interactive Stickers */}
@@ -1629,6 +1684,8 @@ function App() {
               <a href="#cases">Portfolio</a>
               <a href="#process">Process</a>
               <a href="#contact">Contact</a>
+              <Link to="/portal" onClick={playClick}>Client Portal ↗</Link>
+              <Link to="/admin" onClick={playClick}>Admin Center ↗</Link>
             </div>
           </div>
 
