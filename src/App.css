@@ -348,65 +348,6 @@ select:focus-visible {
   margin: 0 auto;
 }
 
-.hero-tagline-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 0 auto 26px;
-  padding: 8px 22px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(228, 61, 18, 0.28);
-  box-shadow: 0 8px 24px rgba(228, 61, 18, 0.09);
-  font-family: var(--mono);
-  font-size: clamp(0.66rem, 1.1vw, 0.78rem);
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--vermilion);
-  transition: all 0.25s ease;
-  width: fit-content;
-  max-width: 95%;
-  text-align: center;
-}
-
-.hero-tagline-badge:hover {
-  transform: translateY(-2px);
-  border-color: var(--vermilion);
-  box-shadow: 0 10px 30px rgba(228, 61, 18, 0.2);
-  background: #ffffff;
-}
-
-.tagline-star {
-  color: var(--vermilion);
-  font-size: 0.95rem;
-  line-height: 1;
-}
-
-.tagline-brand {
-  font-weight: 900;
-  color: var(--vermilion);
-}
-
-.tagline-divider {
-  opacity: 0.35;
-  color: var(--vermilion);
-}
-
-.tagline-text {
-  color: #7A2012;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.hero-bottom-tagline {
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--vermilion);
-}
-
 .hero-heading {
   position: relative;
   z-index: 2;

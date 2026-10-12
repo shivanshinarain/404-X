@@ -759,7 +759,7 @@ function App() {
         </div>
 
         <div className="hero-bottom">
-          <span className="hero-bottom-tagline">404ØX BEYOND BOUNDARIES. BUILT FOR WHAT'S NEXT.</span>
+          <span>INDEPENDENT DIGITAL STUDIO</span>
           <span>WEBSITES · APPS · VIDEO EDITING · E-COMMERCE · MARKETING</span>
           <button onClick={() => goTo("about")}>SCROLL TO EXPLORE ↓</button>
         </div>
